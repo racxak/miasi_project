@@ -74,7 +74,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
 
     @Override
     public ST visitHeader(TextToWebParser.HeaderContext ctx) {
-        ST headerTemplate = new ST(group, "<$level$>$headerContent$</$level$>");
+        ST headerTemplate = new ST(group, "<$level$$fontColor$>$headerContent$</$level$>");
         String headerContent = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         headerTemplate.add("headerContent", headerContent);
 
@@ -82,10 +82,22 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         if (ctx.level() != null && !ctx.level().isEmpty()) {
             ST levelTemplate = visitLevel(ctx.level().get(0)); //lista contextów?
             headerTemplate.add("level", levelTemplate);
-        }
-        else {
+        }      else {
             headerTemplate.add("level", "h2");
         }
+
+
+//      headerTemplate.add("fontColor", " style=\"" + fontColorTemplate +"\"");
+        if (ctx.fontColor() != null && !ctx.fontColor().isEmpty()) {
+            ST fontColTemplate = visitFontColor(ctx.fontColor().get(0)); //lista contextów?
+            ST fontColFinalTemplate = new ST(group, "$space$style=$fontColor$;");
+            fontColFinalTemplate.add("space", " ");
+            fontColFinalTemplate.add("fontColor", fontColTemplate);
+            headerTemplate.add("fontColor", fontColFinalTemplate);
+        }else {
+            headerTemplate.add("fontColor", "");
+        }
+
         return headerTemplate;
     }
 
@@ -95,5 +107,18 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         String headerLevel = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         levelTemplate.add("level", headerLevel);
         return levelTemplate;
+    }
+
+
+    @Override
+    public ST visitFontColor(TextToWebParser.FontColorContext ctx) {
+        ST fontColorTemplate = new ST(group, "color: $fontColor$");
+        String fontColor = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if(!fontColor.isEmpty()){
+            fontColor = "green";
+        }
+
+        fontColorTemplate.add("fontColor", fontColor);
+        return fontColorTemplate;
     }
 }
