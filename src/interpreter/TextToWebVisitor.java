@@ -1,5 +1,6 @@
 package interpreter;
 
+import interpreter.Translator;
 import grammar.TextToWebBaseVisitor;
 import grammar.TextToWebParser;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
@@ -7,6 +8,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
+
 
 public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     // Tworzenie grupy szablonów z niestandardowymi delimiterami
@@ -115,9 +117,15 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST fontColorTemplate = new ST(group, "color: $fontColor$");
         String fontColor = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         if(!fontColor.isEmpty()){
-            fontColor = "green";
+            if (!fontColor.startsWith("#")) {
+                Translator translator = new Translator();
+                try {
+                    fontColor = translator.translate("pl", "en", fontColor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
-
         fontColorTemplate.add("fontColor", fontColor);
         return fontColorTemplate;
     }

@@ -2,7 +2,7 @@ Strona "Moja Strona" {
     Motyw "jasny"
     Czcionka "Arial"
     Naglowek "Elo"{
-    KolorCzcionki "zielony"
+    KolorCzcionki "#fff"
     }
 
 }
