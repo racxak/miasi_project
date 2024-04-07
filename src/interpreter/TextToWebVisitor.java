@@ -214,10 +214,43 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                     ST color = visitColor((TextToWebParser.ColorContext) child);
                     styles.add("styles", color);
                 }
+                if (child instanceof TextToWebParser.FontSizeContext) {
+                    ST fontSize = visitFontSize((TextToWebParser.FontSizeContext) child);
+                    styles.add("styles", fontSize);
+                }
 
             }
             styles.add("styles", "\"");
         }
         return textTemplate;
+    }
+
+    @Override
+    public ST visitFontSize(TextToWebParser.FontSizeContext ctx) {
+        ST fontSizeTemplate = new ST(group, "font-size: $fontSize$;");
+        String fontSize = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if(!fontSize.isEmpty()){
+            if (!fontSize.endsWith("px")) {
+                switch (fontSize) {
+                    case "mala":
+                        fontSize ="small";
+                        break;
+                    case "duza":
+                        fontSize ="large";
+                        break;
+                    case "mniejsza":
+                        fontSize ="smaller";
+                        break;
+                    case "wieksza":
+                        fontSize ="larger";
+                        break;
+                    default:
+                        fontSize ="medium";
+                        break;
+                }
+            }
+        }
+        fontSizeTemplate.add("fontColor", fontSize);
+        return fontSizeTemplate;
     }
 }

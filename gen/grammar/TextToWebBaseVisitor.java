@@ -137,6 +137,13 @@ public class TextToWebBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitHeight(TextToWebParser.HeightContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitLevel(TextToWebParser.LevelContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}

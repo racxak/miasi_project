@@ -8,6 +8,7 @@ Strona "Moja Strona" {
                 Naglowek "Elo2"
                 KolorTla "#4567"
            }
-         Tekst "halo"
+         Tekst "halo"{
+         }
    }
 }

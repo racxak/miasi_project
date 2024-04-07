@@ -113,6 +113,12 @@ public interface TextToWebVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitWidth(TextToWebParser.WidthContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#height}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitHeight(TextToWebParser.HeightContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TextToWebParser#level}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
