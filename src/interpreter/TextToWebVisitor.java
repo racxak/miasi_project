@@ -42,6 +42,10 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                     ST header = visitHeader((TextToWebParser.HeaderContext) child);
                     template.add("content", header);
                 }
+                if (child instanceof TextToWebParser.SectionContext) {
+                    ST section = visitSection((TextToWebParser.SectionContext) child);
+                    template.add("content", section);
+                }
             }
         }
 
@@ -88,14 +92,12 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
             headerTemplate.add("level", "h2");
         }
 
-
-//      headerTemplate.add("fontColor", " style=\"" + fontColorTemplate +"\"");
-        if (ctx.fontColor() != null && !ctx.fontColor().isEmpty()) {
-            ST fontColTemplate = visitFontColor(ctx.fontColor().get(0)); //lista contextów?
-            ST fontColFinalTemplate = new ST(group, "$space$style=$fontColor$;");
-            fontColFinalTemplate.add("space", " ");
-            fontColFinalTemplate.add("fontColor", fontColTemplate);
-            headerTemplate.add("fontColor", fontColFinalTemplate);
+        if (ctx.color() != null && !ctx.color().isEmpty()) {
+            ST colorTemplate = visitColor(ctx.color().get(0)); //lista contextów?
+            ST colorFinalTemplate = new ST(group, "$space$style=\"$fontColor$;\"");
+            colorFinalTemplate.add("space", " ");
+            colorFinalTemplate.add("fontColor", colorTemplate);
+            headerTemplate.add("fontColor", colorFinalTemplate);
         }else {
             headerTemplate.add("fontColor", "");
         }
@@ -107,13 +109,17 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     public ST visitLevel(TextToWebParser.LevelContext ctx) {
         ST levelTemplate = new ST(group, "h$level$");
         String headerLevel = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if (Integer.parseInt(headerLevel)>6 || Integer.parseInt(headerLevel)<1){
+            //Domyślna wartoś dla niepoprawnego poziomu headera
+            headerLevel = "2";
+        }
         levelTemplate.add("level", headerLevel);
         return levelTemplate;
     }
 
 
     @Override
-    public ST visitFontColor(TextToWebParser.FontColorContext ctx) {
+    public ST visitColor(TextToWebParser.ColorContext ctx) {
         ST fontColorTemplate = new ST(group, "color: $fontColor$");
         String fontColor = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         if(!fontColor.isEmpty()){
@@ -128,5 +134,90 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         }
         fontColorTemplate.add("fontColor", fontColor);
         return fontColorTemplate;
+    }
+
+    @Override
+    public ST visitSection(TextToWebParser.SectionContext ctx) {
+        ST sectionTemplate = new ST(group, "\n<$styles$>\n$content$\n</div>\n");
+
+        ST styles = new ST(group, "div$styles$");
+
+        if ( ctx.sectionContent().children != null) {
+            for (ParseTree child : ctx.sectionContent().children) {
+                if (child instanceof TextToWebParser.HeaderContext) {
+                    ST header = visitHeader((TextToWebParser.HeaderContext) child);
+                    sectionTemplate.add("content", header);
+                }
+                if (child instanceof TextToWebParser.SectionContext) {
+                    ST section = visitSection((TextToWebParser.SectionContext) child);
+                    sectionTemplate.add("content", section);
+                }
+                if (child instanceof TextToWebParser.TextContext) {
+                    ST text = visitText((TextToWebParser.TextContext) child);
+                    sectionTemplate.add("content", text);
+                }
+//                TODO: Nie działa kiedy w sekcji jest tyko style
+                if (child instanceof TextToWebParser.BackgroundColorContext) {
+                    ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
+                    styles.add("styles", "style=\"");
+                    styles.add("styles", backgroundColor);
+                    styles.add("styles", "\"");
+                }else {
+                    styles.add("styles", "");
+                }
+            }
+            sectionTemplate.add("styles", styles);
+        }
+
+        return sectionTemplate;
+    }
+
+    @Override
+    public ST visitBackgroundColor(TextToWebParser.BackgroundColorContext ctx) {
+        ST backgroundColorTemplate = new ST(group, "background-color: $backgroundColor$;");
+        String backgroundColor = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if(!backgroundColor.isEmpty()){
+            if (!backgroundColor.startsWith("#")) {
+//                TODO: Zemienić API - darmowy okres wykończony
+                Translator translator = new Translator();
+                try {
+                    backgroundColor = translator.translate("pl", "en", backgroundColor);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        backgroundColorTemplate.add("backgroundColor", backgroundColor);
+        return backgroundColorTemplate;
+    }
+
+    @Override
+    public ST visitText(TextToWebParser.TextContext ctx) {
+        ST textTemplate = new ST(group, "\n<$styles$>\n$text$\n</p>\n");
+
+        ST styles = new ST(group, "p$styles$");
+//        zmienić to roziwązanie kiedy pojawią się faktyczne style
+        styles.add("styles","");
+        textTemplate.add("styles",styles);
+
+        String text = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        textTemplate.add("text", text);
+
+        if ( ctx.textAttributes() != null && ctx.textAttributes().children != null) {
+            styles.add("styles", "style=\"");
+            for (ParseTree child : ctx.textAttributes().children) {
+                if (child instanceof TextToWebParser.BackgroundColorContext) {
+                    ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
+                    styles.add("styles", backgroundColor);
+                }
+                if (child instanceof TextToWebParser.ColorContext) {
+                    ST color = visitColor((TextToWebParser.ColorContext) child);
+                    styles.add("styles", color);
+                }
+
+            }
+            styles.add("styles", "\"");
+        }
+        return textTemplate;
     }
 }

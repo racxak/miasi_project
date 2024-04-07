@@ -6,29 +6,28 @@ pageContent: (theme | font | section | header )*;
 
 theme: 'Motyw' STRING;
 font: 'Czcionka' STRING;
-backgroundColor: 'KolorTła' STRING;
+backgroundColor: 'KolorTla' STRING;
 section: 'Sekcja' STRING '{' sectionContent '}';
-header: 'Naglowek' STRING '{' headerAttributes '}';
+header: 'Naglowek' STRING ('{' (level | color)* '}')?;
 sectionContent: (alignment | backgroundColor | text | image | header | section)*;
 
 // Elementy sekcji
 alignment: 'Rozmieszczenie' STRING;
-text: 'Tekst' STRING '{' textAttributes '}';
+text: 'Tekst' STRING ('{' textAttributes '}')?;
 image: 'Obraz' STRING '{' imageAttributes '}';
 list: 'Lista' '{' 'Typ' STRING listItem* '}';
 listItem: 'Element' STRING;
 
 // Atrybuty
-textAttributes: (fontColor | fontSize | alignment)*;
-imageAttributes: (width | alignment)*;
-headerAttributes: (level | fontColor)*;
+textAttributes: (color | fontSize | alignment | backgroundColor)*;
+imageAttributes: (width | height | alignment)*;
 
 // Atrybuty wspólne
-fontColor: 'KolorCzcionki' STRING;
 fontSize: 'Rozmiar' STRING;
-width: 'Szerokość' STRING;
-level: 'Poziom' STRING;
-color: 'Kolor' STRING;
+width: 'Szerokosc' STRING;
+height: 'Wysokosc' STRING;
+level: 'Poziom' STRING; //h1 - h6 todo: dla kolejnej zagłebionej sekcji niższy
+color: 'KolorCzcionki' STRING; //podawany jako #... albo kolor (po zmianie API)
 
 // Tokeny
 STRING: '"' (~["\r\n])* '"';

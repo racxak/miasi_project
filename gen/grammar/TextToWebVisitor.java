@@ -101,18 +101,6 @@ public interface TextToWebVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitImageAttributes(TextToWebParser.ImageAttributesContext ctx);
 	/**
-	 * Visit a parse tree produced by {@link TextToWebParser#headerAttributes}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitHeaderAttributes(TextToWebParser.HeaderAttributesContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link TextToWebParser#fontColor}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitFontColor(TextToWebParser.FontColorContext ctx);
-	/**
 	 * Visit a parse tree produced by {@link TextToWebParser#fontSize}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
