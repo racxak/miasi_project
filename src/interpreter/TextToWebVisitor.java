@@ -9,10 +9,17 @@ import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupDir;
 
+import java.util.Stack;
+
+
 
 public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     // Tworzenie grupy szablonów z niestandardowymi delimiterami
     STGroup group = new STGroup('$', '$');
+
+    int currentLevel = 1; // Początkowy poziom nagłówka (np. h1)
+    Stack<Integer> levelStack = new Stack<>();
+
 
     @Override
     public ST visitPage(TextToWebParser.PageContext ctx) {
@@ -43,6 +50,14 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                     template.add("content", header);
                 }
                 if (child instanceof TextToWebParser.SectionContext) {
+
+                    if (levelStack.isEmpty()){
+                        levelStack.push(1);
+                    }
+                    else {
+                        levelStack.push(levelStack.peek()+1);
+                    }
+
                     ST section = visitSection((TextToWebParser.SectionContext) child);
                     template.add("content", section);
                 }
@@ -78,18 +93,45 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         return fontTemplate;
     }
 
+
+//    void visitSection(TextToWebParser.HeaderContext ctx) {
+//        // Wygeneruj nagłówek dla bieżącej sekcji
+//        String headerTag = "h" + currentLevel;
+//        String sectionTitle = ctx.STRING().getText(); // Pobierz tytuł sekcji
+//
+//        // Wygeneruj kod HTML dla nagłówka
+//        String htmlHeader = "<" + headerTag + ">" + sectionTitle + "</" + headerTag + ">";
+//        System.out.println(htmlHeader);
+//
+//        // Zwiększ poziom dla zagnieżdżonych sekcji
+//        currentLevel++;
+//
+//        // Przetwórz zagnieżdżone sekcje rekurencyjnie
+//        for (TextToWebParser.HeaderContext subsection : ctx.level()) {
+//            visitSection(subsection);
+//        }
+//
+//        // Powrót do poprzedniego poziomu po zakończeniu zagnieżdżonych sekcji
+//        currentLevel--;
+//    }
+
     @Override
     public ST visitHeader(TextToWebParser.HeaderContext ctx) {
         ST headerTemplate = new ST(group, "<$level$$fontColor$>$headerContent$</$level$>");
         String headerContent = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         headerTemplate.add("headerContent", headerContent);
 
+        Integer level;
         //level
         if (ctx.level() != null && !ctx.level().isEmpty()) {
             ST levelTemplate = visitLevel(ctx.level().get(0)); //lista contextów?
             headerTemplate.add("level", levelTemplate);
-        }      else {
-            headerTemplate.add("level", "h2");
+        }
+        else {
+
+            level = levelStack.peek();
+
+            headerTemplate.add("level", "h" + level);
         }
 
         if (ctx.color() != null && !ctx.color().isEmpty()) {
@@ -149,6 +191,14 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                     sectionTemplate.add("content", header);
                 }
                 if (child instanceof TextToWebParser.SectionContext) {
+
+                    if (levelStack.isEmpty()){
+                        levelStack.push(1);
+                    }
+                    else {
+                        levelStack.push(levelStack.peek()+1);
+                    }
+
                     ST section = visitSection((TextToWebParser.SectionContext) child);
                     sectionTemplate.add("content", section);
                 }
@@ -169,6 +219,9 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
             sectionTemplate.add("styles", styles);
         }
 
+        if (!levelStack.isEmpty()){
+            levelStack.pop();
+        }
         return sectionTemplate;
     }
 

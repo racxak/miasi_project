@@ -7,7 +7,19 @@ Strona "Moja Strona" {
          Sekcja "O mnie"{
                 Naglowek "Elo2"
                 KolorTla "#4567"
-           }
+                Sekcja "O mnie"{
+                   Naglowek "Elo3"
+                   KolorTla "#4567"
+                }
+                Sekcja "O mnie"{
+                   Naglowek "Elo4"
+                   KolorTla "#4567"
+                }
+         }
+         Sekcja "O mnie"{
+            Naglowek "Elo5"
+            KolorTla "#4567"
+         }
          Tekst "halo"{
          }
    }

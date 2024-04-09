@@ -4,9 +4,9 @@ grammar TextToWeb;
 page: 'Strona' STRING '{' pageContent '}';
 pageContent: (theme | font | section | header )*;
 
-theme: 'Motyw' STRING;
+theme: 'Motyw' STRING; // jasny ciemny
 font: 'Czcionka' STRING;
-backgroundColor: 'KolorTla' STRING;
+backgroundColor: 'KolorTla' STRING; //podawany jako #... albo kolor (po zmianie API)
 section: 'Sekcja' STRING '{' sectionContent '}';
 header: 'Naglowek' STRING ('{' (level | color)* '}')?;
 sectionContent: (alignment | backgroundColor | text | image | header | section)*;
@@ -23,7 +23,7 @@ textAttributes: (color | fontSize | alignment | backgroundColor)*;
 imageAttributes: (width | height | alignment)*;
 
 // Atrybuty wspólne
-fontSize: 'Rozmiar' STRING;
+fontSize: 'Rozmiar' STRING; //px lub mała,duża,średnia,mniejsza,większa
 width: 'Szerokosc' STRING;
 height: 'Wysokosc' STRING;
 level: 'Poziom' STRING; //h1 - h6 todo: dla kolejnej zagłebionej sekcji niższy
