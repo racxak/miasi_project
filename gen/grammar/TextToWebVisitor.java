@@ -1,4 +1,4 @@
-// Generated from D:/miasi projekt/miasi_project/src/grammar/TextToWeb.g4 by ANTLR 4.13.1
+// Generated from C:/Users/user/IntelliJIDEAProjects/Antlr/Miasi_Project/src/grammar/TextToWeb.g4 by ANTLR 4.13.1
 package grammar;
 import org.antlr.v4.runtime.tree.ParseTreeVisitor;
 
@@ -130,4 +130,10 @@ public interface TextToWebVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitColor(TextToWebParser.ColorContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#source}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitSource(TextToWebParser.SourceContext ctx);
 }

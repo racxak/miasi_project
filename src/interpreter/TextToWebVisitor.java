@@ -1,13 +1,10 @@
 package interpreter;
 
-import interpreter.Translator;
 import grammar.TextToWebBaseVisitor;
 import grammar.TextToWebParser;
-import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 import org.antlr.v4.runtime.tree.ParseTree;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
-import org.stringtemplate.v4.STGroupDir;
 
 import java.util.Stack;
 
@@ -17,7 +14,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     // Tworzenie grupy szablonów z niestandardowymi delimiterami
     STGroup group = new STGroup('$', '$');
 
-    int currentLevel = 1; // Początkowy poziom nagłówka (np. h1)
+//    int currentLevel = 1; // Początkowy poziom nagłówka (np. h1)
     Stack<Integer> levelStack = new Stack<>();
 
 
@@ -92,8 +89,6 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
             fontTemplate.add("fontName", fontName);
         return fontTemplate;
     }
-
-
 //    void visitSection(TextToWebParser.HeaderContext ctx) {
 //        // Wygeneruj nagłówek dla bieżącej sekcji
 //        String headerTag = "h" + currentLevel;
@@ -183,7 +178,8 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST sectionTemplate = new ST(group, "\n<$styles$>\n$content$\n</div>\n");
 
         ST styles = new ST(group, "div$styles$");
-
+        ST styles2 = new ST(group, "$space$style=\"$styles$\"");
+        styles2.add("space"," ");
         if ( ctx.sectionContent().children != null) {
             for (ParseTree child : ctx.sectionContent().children) {
                 if (child instanceof TextToWebParser.HeaderContext) {
@@ -205,20 +201,30 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 if (child instanceof TextToWebParser.TextContext) {
                     ST text = visitText((TextToWebParser.TextContext) child);
                     sectionTemplate.add("content", text);
-                }else{
+            }else
+            if (child instanceof TextToWebParser.ImageContext) {
+                ST image = visitImage((TextToWebParser.ImageContext) child);
+                sectionTemplate.add("content", image);}
+            else{
                     styles.add("content", "");
                 }
 
                 if (child instanceof TextToWebParser.BackgroundColorContext) {
                     ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
-                    styles.add("styles", " style=\"");
-                    styles.add("styles", backgroundColor);
-                    styles.add("styles", "\"");
-                }else {
-                    styles.add("styles", "");
+                    styles2.add("styles", backgroundColor);
+                } else if (child instanceof TextToWebParser.WidthContext) {
+                    ST width = visitWidth((TextToWebParser.WidthContext) child);
+                    styles2.add("styles", width);
+                }  else if (child instanceof TextToWebParser.HeightContext) {
+                    ST height = visitHeight((TextToWebParser.HeightContext) child);
+                    styles2.add("styles", height);
+                } else {
+                    styles2.add("styles", "");
+
+                    }
                 }
-            }
-            sectionTemplate.add("styles", styles);
+                styles.add("styles",styles2);
+                sectionTemplate.add("styles", styles);
         }
 
         if (!levelStack.isEmpty()){
@@ -267,7 +273,14 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 } else if (child instanceof TextToWebParser.FontSizeContext) {
                     ST fontSize = visitFontSize((TextToWebParser.FontSizeContext) child);
                     styles.add("styles", fontSize);
-                } else {
+                }
+                else if (child instanceof TextToWebParser.WidthContext) {
+                    ST width = visitWidth((TextToWebParser.WidthContext) child);
+                    styles.add("styles", width);
+                }  else if (child instanceof TextToWebParser.HeightContext) {
+                    ST height = visitHeight((TextToWebParser.HeightContext) child);
+                    styles.add("styles", height);}
+                else {
                     styles.add("styles", "");
                 }
             }
@@ -286,23 +299,13 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         String fontSize = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         if(!fontSize.isEmpty()){
             if (!fontSize.endsWith("px")) {
-                switch (fontSize) {
-                    case "mala":
-                        fontSize ="small";
-                        break;
-                    case "duza":
-                        fontSize ="large";
-                        break;
-                    case "mniejsza":
-                        fontSize ="smaller";
-                        break;
-                    case "wieksza":
-                        fontSize ="larger";
-                        break;
-                    default:
-                        fontSize ="medium";
-                        break;
-                }
+                fontSize = switch (fontSize) {
+                    case "mala" -> "small";
+                    case "duza" -> "large";
+                    case "mniejsza" -> "smaller";
+                    case "wieksza" -> "larger";
+                    default -> "medium";
+                };
             }
         }
         fontSizeTemplate.add("fontColor", fontSize);
@@ -326,4 +329,49 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         heightTemplate.add("height", height);
         return heightTemplate;
     }
+
+    @Override
+    public ST visitImage(TextToWebParser.ImageContext ctx) {
+        ST imageTemplate = new ST(group, "<$tag$ alt=\"$alt$\" $stylesImage$>");
+        String alt = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        imageTemplate.add("alt",alt);
+
+        ST tag = new ST(group, "img$source$");
+        ST stylesImage = new ST(group, "style=\" $imgStyle$\"");
+
+        if ( ctx.imageAttributes().children != null) {
+            for (ParseTree child : ctx.imageAttributes().children) {
+                if (child instanceof TextToWebParser.SourceContext) {
+                    ST source = visitSource((TextToWebParser.SourceContext) child);
+                    tag.add("source", source);
+                }else{
+                    tag.add("source", "src=\"../noSource.jpg\"");
+                }
+                if (child instanceof TextToWebParser.HeaderContext) {
+                    ST height = visitHeight((TextToWebParser.HeightContext) child);
+                    stylesImage.add("imgStyle", height);
+                }
+                if (child instanceof TextToWebParser.WidthContext) {
+                    ST width = visitWidth((TextToWebParser.WidthContext) child);
+                    stylesImage.add("imgStyle", width);
+                }
+            }
+        }else {
+            tag.add("source", " src=\"../noSource.jpg\"");
+        }
+        imageTemplate.add("tag",tag);
+        imageTemplate.add("stylesImage",stylesImage);
+
+        return imageTemplate;
+    }
+    @Override
+    public ST visitSource(TextToWebParser.SourceContext ctx) {
+        ST sourceTemplate = new ST(group, "$space$src=\"$source$\" ");
+        sourceTemplate.add("space"," ");
+        String source = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+
+        sourceTemplate.add("source", source);
+        return sourceTemplate;
+    }
+
 }

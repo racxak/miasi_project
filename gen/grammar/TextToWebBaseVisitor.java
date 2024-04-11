@@ -1,4 +1,4 @@
-// Generated from D:/miasi projekt/miasi_project/src/grammar/TextToWeb.g4 by ANTLR 4.13.1
+// Generated from C:/Users/user/IntelliJIDEAProjects/Antlr/Miasi_Project/src/grammar/TextToWeb.g4 by ANTLR 4.13.1
 package grammar;
 import org.antlr.v4.runtime.tree.AbstractParseTreeVisitor;
 
@@ -152,4 +152,11 @@ public class TextToWebBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
 	@Override public T visitColor(TextToWebParser.ColorContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
+	@Override public T visitSource(TextToWebParser.SourceContext ctx) { return visitChildren(ctx); }
 }
