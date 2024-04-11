@@ -189,7 +189,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 if (child instanceof TextToWebParser.HeaderContext) {
                     ST header = visitHeader((TextToWebParser.HeaderContext) child);
                     sectionTemplate.add("content", header);
-                }
+                }else
                 if (child instanceof TextToWebParser.SectionContext) {
 
                     if (levelStack.isEmpty()){
@@ -201,15 +201,17 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
 
                     ST section = visitSection((TextToWebParser.SectionContext) child);
                     sectionTemplate.add("content", section);
-                }
+                }else
                 if (child instanceof TextToWebParser.TextContext) {
                     ST text = visitText((TextToWebParser.TextContext) child);
                     sectionTemplate.add("content", text);
+                }else{
+                    styles.add("content", "");
                 }
-//                TODO: Nie działa kiedy w sekcji jest tyko style
+
                 if (child instanceof TextToWebParser.BackgroundColorContext) {
                     ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
-                    styles.add("styles", "style=\"");
+                    styles.add("styles", " style=\"");
                     styles.add("styles", backgroundColor);
                     styles.add("styles", "\"");
                 }else {
@@ -249,9 +251,6 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST textTemplate = new ST(group, "\n<$styles$>\n$text$\n</p>\n");
 
         ST styles = new ST(group, "p$styles$");
-//        zmienić to roziwązanie kiedy pojawią się faktyczne style
-        styles.add("styles","");
-        textTemplate.add("styles",styles);
 
         String text = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         textTemplate.add("text", text);
@@ -262,14 +261,16 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 if (child instanceof TextToWebParser.BackgroundColorContext) {
                     ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
                     styles.add("styles", backgroundColor);
-                }
+                }else
                 if (child instanceof TextToWebParser.ColorContext) {
                     ST color = visitColor((TextToWebParser.ColorContext) child);
                     styles.add("styles", color);
-                }
+                }else
                 if (child instanceof TextToWebParser.FontSizeContext) {
                     ST fontSize = visitFontSize((TextToWebParser.FontSizeContext) child);
                     styles.add("styles", fontSize);
+                }else{
+                    textTemplate.add("styles","");
                 }
 
             }

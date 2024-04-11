@@ -26,7 +26,7 @@ imageAttributes: (width | height | alignment)*;
 fontSize: 'Rozmiar' STRING; //px lub mała,duża,średnia,mniejsza,większa
 width: 'Szerokosc' STRING;
 height: 'Wysokosc' STRING;
-level: 'Poziom' STRING; //h1 - h6 todo: dla kolejnej zagłebionej sekcji niższy
+level: 'Poziom' STRING; //h1 - h6  dla kolejnej zagnieżdżonej sekcji niższy
 color: 'KolorCzcionki' STRING; //podawany jako #... albo kolor (po zmianie API)
 
 // Tokeny
