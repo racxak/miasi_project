@@ -196,15 +196,17 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
 
                     ST section = visitSection((TextToWebParser.SectionContext) child);
                     sectionTemplate.add("content", section);
-                }else
-                if (child instanceof TextToWebParser.TextContext) {
+                }else if (child instanceof TextToWebParser.TextContext) {
                     ST text = visitText((TextToWebParser.TextContext) child);
                     sectionTemplate.add("content", text);
-            }else
-            if (child instanceof TextToWebParser.ImageContext) {
+                }
+                else if (child instanceof TextToWebParser.ImageContext) {
                 ST image = visitImage((TextToWebParser.ImageContext) child);
                 sectionTemplate.add("content", image);}
-            else{
+                else if (child instanceof TextToWebParser.ListContext) {
+                    ST list = visitList((TextToWebParser.ListContext) child);
+                    sectionTemplate.add("content", list);}
+                 else{
                     styles.add("content", "");
                 }
 
@@ -355,10 +357,13 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 if (child instanceof TextToWebParser.HeaderContext) {
                     ST height = visitHeight((TextToWebParser.HeightContext) child);
                     stylesImage.add("imgStyle", height);
-                }
+                } else
                 if (child instanceof TextToWebParser.WidthContext) {
                     ST width = visitWidth((TextToWebParser.WidthContext) child);
                     stylesImage.add("imgStyle", width);
+                }
+                else {
+                    stylesImage.add("imgStyle", "");
                 }
             }
         }else {
@@ -389,7 +394,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
             case "prawo" -> "right";
             case "justify" -> "justify";
             default -> "left";
-        }; // Domyślne wyrównanie, na wypadek gdyby nie zostało określone w kontekście
+        };
 
         alignmentTemplate.add("alignment", alignment);
         return alignmentTemplate;
@@ -413,5 +418,42 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         decorationTemplate.add("decoration", decoration);
         return decorationTemplate;
     }
+
+    @Override
+    public ST visitList(TextToWebParser.ListContext ctx) {
+        ST listTemplate = new ST(group,"\n<$type$>\n$items$</$type$>\n");
+
+
+        String type;
+        try {
+            type = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+            if (type.equals("numerowana")) {
+                type = "ol";
+            } else {
+                type = "ul";
+            }
+        }catch (NullPointerException e) {
+            type = "ul";
+        }
+        listTemplate.add("type", type);
+
+        ST items = new ST(group, "<li> $item$ </li>\n");
+        for (TextToWebParser.ListItemContext itemCtx : ctx.listItem()) {
+            ST item = visitListItem(itemCtx);
+            listTemplate.add("items", item);
+        }
+        return listTemplate;
+    }
+
+    @Override
+    public ST visitListItem(TextToWebParser.ListItemContext ctx) {
+        ST itemTemplate = new ST(group,"<li> $item$ </li>\n");
+
+        String item = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        itemTemplate.add("item", item);
+
+        return itemTemplate;
+    }
+
 
 }

@@ -22,10 +22,15 @@ Strona "Moja Strona" {
             KolorTla "#4567"
          }
          Tekst "halo"{
-         Wyrownanie tekstu "lewo"
+         Wyrownanie tekstu "srodek"
          }
          Obraz "obraz"{
              Zrodlo "cos"
+         }
+         Lista {
+         Typ "numerowana"
+         Element "a"
+         Element "b"
          }
    }
 }

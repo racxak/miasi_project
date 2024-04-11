@@ -17,7 +17,7 @@ textAlignment: 'Wyrownanie tekstu' STRING;
 textDecoration: 'Ozdoby tekstu' STRING;
 text: 'Tekst' STRING ('{' textAttributes '}')?;
 image: 'Obraz' STRING '{' imageAttributes '}';
-list: 'Lista' '{' 'Typ' STRING listItem* '}';
+list: 'Lista' '{' ('Typ' STRING)? listItem* '}'; //typ : numerowana
 listItem: 'Element' STRING;
 
 // Atrybuty
