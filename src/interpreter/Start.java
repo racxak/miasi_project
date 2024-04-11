@@ -7,8 +7,19 @@ import org.antlr.v4.runtime.tree.ParseTree;
 import org.stringtemplate.v4.ST;
 
 import java.io.IOException;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+
 
 public class Start {
+    public static void saveResultToHtml(String content, String filePath) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(filePath, false))) {
+            writer.write(content);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public static void main(String[] args) {
         CharStream input = null;
         try {
@@ -32,5 +43,11 @@ public class Start {
 
         // Wyświetlenie wygenerowanego kodu HTML/CSS
         System.out.println(result.render());
+
+        //Zapisywanie do pliku
+        String htmlContent = result.render();
+        String filePath = "WebPage.html";
+        saveResultToHtml(htmlContent, filePath);
+
     }
 }
