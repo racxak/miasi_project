@@ -248,34 +248,35 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
 
     @Override
     public ST visitText(TextToWebParser.TextContext ctx) {
+
         ST textTemplate = new ST(group, "\n<$styles$>\n$text$\n</p>\n");
 
         ST styles = new ST(group, "p$styles$");
 
         String text = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         textTemplate.add("text", text);
-
         if ( ctx.textAttributes() != null && ctx.textAttributes().children != null) {
-            styles.add("styles", "style=\"");
+            styles.add("styles", " style=\"");
             for (ParseTree child : ctx.textAttributes().children) {
                 if (child instanceof TextToWebParser.BackgroundColorContext) {
                     ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
                     styles.add("styles", backgroundColor);
-                }else
-                if (child instanceof TextToWebParser.ColorContext) {
+                } else if (child instanceof TextToWebParser.ColorContext) {
                     ST color = visitColor((TextToWebParser.ColorContext) child);
                     styles.add("styles", color);
-                }else
-                if (child instanceof TextToWebParser.FontSizeContext) {
+                } else if (child instanceof TextToWebParser.FontSizeContext) {
                     ST fontSize = visitFontSize((TextToWebParser.FontSizeContext) child);
                     styles.add("styles", fontSize);
-                }else{
-                    textTemplate.add("styles","");
+                } else {
+                    styles.add("styles", "");
                 }
-
             }
             styles.add("styles", "\"");
+        }else {
+            styles.add("styles", "");
         }
+        textTemplate.add("styles", styles);
+
         return textTemplate;
     }
 
@@ -306,5 +307,23 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         }
         fontSizeTemplate.add("fontColor", fontSize);
         return fontSizeTemplate;
+    }
+
+    @Override
+    public ST visitWidth(TextToWebParser.WidthContext ctx) {
+        ST widthTemplate = new ST(group, "width: $width$;");
+        String width = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+
+        widthTemplate.add("width", width);
+        return widthTemplate;
+    }
+
+    @Override
+    public ST visitHeight(TextToWebParser.HeightContext ctx) {
+        ST heightTemplate = new ST(group, "height: $height$;");
+        String height = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+
+        heightTemplate.add("height", height);
+        return heightTemplate;
     }
 }

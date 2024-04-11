@@ -9,7 +9,7 @@ font: 'Czcionka' STRING;
 backgroundColor: 'KolorTla' STRING; //podawany jako #... albo kolor (po zmianie API)
 section: 'Sekcja' STRING '{' sectionContent '}';
 header: 'Naglowek' STRING ('{' (level | color)* '}')?;
-sectionContent: (alignment | backgroundColor | text | image | header | section)*;
+sectionContent: (alignment | backgroundColor | width | height | text | image | header | section)*;
 
 // Elementy sekcji
 alignment: 'Rozmieszczenie' STRING;
