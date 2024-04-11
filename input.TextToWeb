@@ -22,6 +22,7 @@ Strona "Moja Strona" {
             KolorTla "#4567"
          }
          Tekst "halo"{
+         Wyrownanie tekstu "lewo"
          }
          Obraz "obraz"{
              Zrodlo "cos"

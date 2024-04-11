@@ -14,13 +14,14 @@ sectionContent: (alignment | backgroundColor | width | height | text | image |li
 // Elementy sekcji
 alignment: 'Rozmieszczenie' STRING;
 textAlignment: 'Wyrownanie tekstu' STRING;
+textDecoration: 'Ozdoby tekstu' STRING;
 text: 'Tekst' STRING ('{' textAttributes '}')?;
 image: 'Obraz' STRING '{' imageAttributes '}';
 list: 'Lista' '{' 'Typ' STRING listItem* '}';
 listItem: 'Element' STRING;
 
 // Atrybuty
-textAttributes: (width | height | color | fontSize | textAlignment | alignment | backgroundColor)*;
+textAttributes: (width | height | color | textDecoration| fontSize | textAlignment | alignment | backgroundColor)*;
 imageAttributes: (width | height | alignment |source)*;
 
 // Atrybuty wspólne

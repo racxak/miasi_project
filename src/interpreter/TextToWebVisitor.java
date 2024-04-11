@@ -14,7 +14,6 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     // Tworzenie grupy szablonów z niestandardowymi delimiterami
     STGroup group = new STGroup('$', '$');
 
-//    int currentLevel = 1; // Początkowy poziom nagłówka (np. h1)
     Stack<Integer> levelStack = new Stack<>();
 
 
@@ -280,6 +279,12 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 }  else if (child instanceof TextToWebParser.HeightContext) {
                     ST height = visitHeight((TextToWebParser.HeightContext) child);
                     styles.add("styles", height);}
+                else if (child instanceof TextToWebParser.TextAlignmentContext) {
+                    ST textAlignment = visitTextAlignment((TextToWebParser.TextAlignmentContext) child);
+                    styles.add("styles", textAlignment);}
+                else if (child instanceof TextToWebParser.TextDecorationContext) {
+                    ST textDecoration = visitTextDecoration((TextToWebParser.TextDecorationContext) child);
+                    styles.add("styles", textDecoration);}
                 else {
                     styles.add("styles", "");
                 }
@@ -372,6 +377,41 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
 
         sourceTemplate.add("source", source);
         return sourceTemplate;
+    }
+
+    @Override
+    public ST visitTextAlignment(TextToWebParser.TextAlignmentContext ctx) {
+        ST alignmentTemplate = new ST(group, "text-align: $alignment$;");
+
+        String alignmentValue = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        String alignment = switch (alignmentValue.toLowerCase()) {
+            case "srodek" -> "center";
+            case "prawo" -> "right";
+            case "justify" -> "justify";
+            default -> "left";
+        }; // Domyślne wyrównanie, na wypadek gdyby nie zostało określone w kontekście
+
+        alignmentTemplate.add("alignment", alignment);
+        return alignmentTemplate;
+    }
+
+    @Override
+    public ST visitTextDecoration(TextToWebParser.TextDecorationContext ctx) {
+        ST decorationTemplate = new ST(group, "text-decoration: $decoration$; ");
+
+        String decorationValue = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        String decoration = "none";
+
+        switch (decorationValue.toLowerCase()) {
+            case "podkreslenie" -> decoration = "underline";
+            case "przekreslenie" -> decoration = "line-through";
+            case "nadkreslenie" -> decoration = "overline";
+            default -> decoration = "none";
+
+        }
+
+        decorationTemplate.add("decoration", decoration);
+        return decorationTemplate;
     }
 
 }

@@ -65,6 +65,18 @@ public interface TextToWebVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitAlignment(TextToWebParser.AlignmentContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#textAlignment}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTextAlignment(TextToWebParser.TextAlignmentContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#textDecoration}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTextDecoration(TextToWebParser.TextDecorationContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link TextToWebParser#text}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
