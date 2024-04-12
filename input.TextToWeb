@@ -1,36 +1,67 @@
 Strona "Moja Strona" {
-    Naglowek "Elo"{
+    Motyw "ciemny"
+    Naglowek "Projekt MIASI"{
     Poziom "1"
-    KolorCzcionki "#fff"
+    KolorCzcionki "#BB86FC"
     }
-    Sekcja "O mnie"{
-         Sekcja "O mnie"{
-                Naglowek "Elo2"
-                KolorTla "#4567"
-                Wysokosc "20px"
-                Sekcja "O mnie"{
-                   Naglowek "Elo3"
-                   KolorTla "#4567"
+    Czcionka "Noto Sans"
+
+    Sekcja "O Projekcie"{
+         Tekst "Projekt ma na celu interpretacje tekstu na kod HTML/CSS"{
+              Wyrownanie tekstu "Srodek"
+         }
+         Sekcja "Pokazanie Listy i czcionek"{
+                Rozmieszczenie "rzad" "srodek"
+                Sekcja "Pokazanie listy"{
+                    KolorTla "#03DAC6"
+                    Naglowek "Dzięki projektowi można w przystępny sposób stowrzyć:"
+                    Lista{
+                        Typ "numerowana"
+                        Element "div"
+                        Element "p"
+                        Element "ul/ol"
+                        Element "proste rozmieszczenia"
+                        }
                 }
-                Sekcja "O mnie"{
-                   Naglowek "Elo4"
-                   KolorTla "#467"
+                Sekcja "Czcionki"{
+                    KolorTla "#3700B3"
+                    Tekst "Czcionki mogą być duże"{
+                        Rozmiar "40px"
+                    }
+                         Tekst "albo bardzo małe"{
+                         Wyrownanie tekstu "prawo"
+                         Rozmiar "10px"
+                    }
+                    Tekst "Kolorowe"{
+                         Wyrownanie tekstu "srodek"
+                         KolorTla "#BB86FC"
+                         KolorCzcionki "#FE7F00"
+                    }
+                    Tekst "Udekorowane"{
+                         Wyrownanie tekstu "justify"
+                         Ozdoby tekstu "podkreslenie"
+                    }
                 }
-         }
-         Sekcja "O mnie"{
-            Naglowek "Elo5"
-            KolorTla "#4567"
-         }
-         Tekst "halo"{
-         Wyrownanie tekstu "srodek"
-         }
-         Obraz "obraz"{
-             Zrodlo "cos"
-         }
-         Lista {
-         Typ "numerowana"
-         Element "a"
-         Element "b"
-         }
-   }
+            }
+            Sekcja "Zdjecia"{
+                Rozmieszczenie "rzad" "srodek"
+                Sekcja "Kontener"{
+                    Rozmieszczenie "kolumna" "srodek"
+                    Obraz "komputer"{
+                        Zrodlo "https://ninjasites.com/images/blog/webpage-creation.png?v=1684153977260389102"
+                        Szerokosc "200px"
+                        Wysokosc "200px"
+                    }
+                     Tekst "Kiedy mamy źródło"
+                }
+                Sekcja "Kontener"{
+                    Rozmieszczenie "kolumna" "srodek"
+                    Obraz "komputer"{
+                          Szerokosc "200px"
+                          Wysokosc "200px"
+                    }
+                    Tekst "Kiedy nie mamy źródła"
+                }
+            }
+    }
 }

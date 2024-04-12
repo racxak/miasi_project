@@ -8,19 +8,20 @@ import org.stringtemplate.v4.STGroup;
 
 import java.util.Stack;
 
-
-
 public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     // Tworzenie grupy szablonów z niestandardowymi delimiterami
     STGroup group = new STGroup('$', '$');
 
     Stack<Integer> levelStack = new Stack<>();
 
+    String fontsGoogle = "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n" +
+            "<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n" +
+            "<link href=\"https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Josefin+Sans:ital,wght@0,100..700;1,100..700&family=Lato:ital,wght@0,100;0,300;0,400;0,700;0,900;1,100;1,300;1,400;1,700;1,900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Noto+Sans:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&family=Oswald:wght@200..700&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap\" rel=\"stylesheet\">";
 
     @Override
     public ST visitPage(TextToWebParser.PageContext ctx) {
-        ST template = new ST(group, "<!DOCTYPE html>\n<html>\n<head>\n<title>$title$</title>\n<style> \nbody{\n $themeStyles$ \n $fontStyles$ \n} \n </style>\n</head>\n<body>$content$</body>\n</html>");
-
+        ST template = new ST(group, "<!DOCTYPE html>\n<html>\n<head>\n<title>$title$</title>\n$fontsGoogle$\n<style> \nbody{\n $themeStyles$ \n $fontStyles$ \n} \n </style>\n</head>\n<body>$content$</body>\n</html>");
+        template.add("fontsGoogle",fontsGoogle);
         String defaultThemeStyles = "background-color: #333; \n color: #f0f0f0; "; // Domyślny ciemny motyw
         String defaultFontStyles = "font-family: 'Arial', sans-serif; "; // Domyślna czcionka
 
@@ -177,7 +178,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST sectionTemplate = new ST(group, "\n<$styles$>\n$content$\n</div>\n");
 
         ST styles = new ST(group, "div$styles$");
-        ST styles2 = new ST(group, "$space$style=\"$styles$\"");
+        ST styles2 = new ST(group, "$space$style=\"margin:2rem; padding: 1rem; border-radius: 8px; $styles$\"");
         styles2.add("space"," ");
         if ( ctx.sectionContent().children != null) {
             for (ParseTree child : ctx.sectionContent().children) {
@@ -219,6 +220,10 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 }  else if (child instanceof TextToWebParser.HeightContext) {
                     ST height = visitHeight((TextToWebParser.HeightContext) child);
                     styles2.add("styles", height);
+                }
+                else if (child instanceof TextToWebParser.AlignmentContext) {
+                    ST alignment = visitAlignment((TextToWebParser.AlignmentContext) child);
+                    styles2.add("styles", alignment);
                 } else {
                     styles2.add("styles", "");
 
@@ -259,11 +264,10 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST textTemplate = new ST(group, "\n<$styles$>\n$text$\n</p>\n");
 
         ST styles = new ST(group, "p$styles$");
-
         String text = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         textTemplate.add("text", text);
         if ( ctx.textAttributes() != null && ctx.textAttributes().children != null) {
-            styles.add("styles", " style=\"");
+            styles.add("styles", " style=\"margin: 1rem; padding: 0.5rem; border-radius: 8px;");
             for (ParseTree child : ctx.textAttributes().children) {
                 if (child instanceof TextToWebParser.BackgroundColorContext) {
                     ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
@@ -293,7 +297,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
             }
             styles.add("styles", "\"");
         }else {
-            styles.add("styles", "");
+            styles.add("styles", " style=\"margin: 1rem; padding: 0.5rem; border-radius: 8px; \";");
         }
         textTemplate.add("styles", styles);
 
@@ -315,7 +319,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 };
             }
         }
-        fontSizeTemplate.add("fontColor", fontSize);
+        fontSizeTemplate.add("fontSize", fontSize);
         return fontSizeTemplate;
     }
 
@@ -332,7 +336,6 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     public ST visitHeight(TextToWebParser.HeightContext ctx) {
         ST heightTemplate = new ST(group, "height: $height$;");
         String height = ctx.STRING().getText().replaceAll("^\"|\"$", "");
-
         heightTemplate.add("height", height);
         return heightTemplate;
     }
@@ -344,33 +347,37 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         imageTemplate.add("alt",alt);
 
         ST tag = new ST(group, "img$source$");
-        ST stylesImage = new ST(group, "style=\" $imgStyle$\"");
+        tag.add("source", "");
+
+        ST stylesImage1 = new ST(group, "style=\" $imgStyle$ \"");
 
         if ( ctx.imageAttributes().children != null) {
             for (ParseTree child : ctx.imageAttributes().children) {
                 if (child instanceof TextToWebParser.SourceContext) {
                     ST source = visitSource((TextToWebParser.SourceContext) child);
                     tag.add("source", source);
-                }else{
-                    tag.add("source", "src=\"../noSource.jpg\"");
                 }
-                if (child instanceof TextToWebParser.HeaderContext) {
+                if (child instanceof TextToWebParser.HeightContext) {
                     ST height = visitHeight((TextToWebParser.HeightContext) child);
-                    stylesImage.add("imgStyle", height);
-                } else
+                    stylesImage1.add("imgStyle", height);
+                }
+                else
                 if (child instanceof TextToWebParser.WidthContext) {
                     ST width = visitWidth((TextToWebParser.WidthContext) child);
-                    stylesImage.add("imgStyle", width);
+                    stylesImage1.add("imgStyle", width);
                 }
                 else {
-                    stylesImage.add("imgStyle", "");
+                    stylesImage1.add("imgStyle", "");
                 }
             }
-        }else {
-            tag.add("source", " src=\"../noSource.jpg\"");
         }
+        if (tag.render().equals("img")) {
+            tag.add("source", " src=\"src\\noSource.jpg\"");
+        }
+
+
         imageTemplate.add("tag",tag);
-        imageTemplate.add("stylesImage",stylesImage);
+        imageTemplate.add("stylesImage",stylesImage1);
 
         return imageTemplate;
     }
@@ -379,7 +386,9 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST sourceTemplate = new ST(group, "$space$src=\"$source$\" ");
         sourceTemplate.add("space"," ");
         String source = ctx.STRING().getText().replaceAll("^\"|\"$", "");
-
+        if (source.equals("")){
+            source= "../noSource.jpg" ;
+        }
         sourceTemplate.add("source", source);
         return sourceTemplate;
     }
@@ -437,7 +446,6 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         }
         listTemplate.add("type", type);
 
-        ST items = new ST(group, "<li> $item$ </li>\n");
         for (TextToWebParser.ListItemContext itemCtx : ctx.listItem()) {
             ST item = visitListItem(itemCtx);
             listTemplate.add("items", item);
@@ -455,5 +463,67 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         return itemTemplate;
     }
 
+
+    @Override
+    public ST visitAlignment(TextToWebParser.AlignmentContext ctx) {
+        ST alignmentTemplate = new ST(group,"display: flex; \n flex-direction: $flexDirection$;\n justify-content: $justifyContent$;\n align-items: $alignItems$;\n");
+
+        String direction = ctx.STRING(0).getText().replaceAll("^\"|\"$", "").toLowerCase();
+        String alignment = ctx.STRING(1).getText().replaceAll("^\"|\"$", "").toLowerCase();
+
+        String flexDirection = "column";
+        String justifyContent = "flex-start"; // Domyślnie elementy są na początku
+        String alignItems = "flex-start"; // Domyślnie elementy są na początku osi krzyżowej
+
+        if (direction.equals("rzad")) {
+            flexDirection = "row";
+        }
+
+
+            switch (alignment) {
+                case "lewo-gora":
+                    alignItems= "flex-start";
+                    justifyContent= "flex-start";
+                    break;
+                case "lewo-srodek":
+                    alignItems= "center";
+                    justifyContent= "flex-start";
+                    break;
+                case "lewo-dol":
+                    alignItems= "flex-end";
+                    justifyContent= "flex-start";
+                    break;
+                case "srodek-gora":
+                    alignItems= "flex-start";
+                    justifyContent= "center";
+                    break;
+                case "srodek":
+                    alignItems= "center";
+                    justifyContent= "center";
+                    break;
+                case "srodek-dol":
+                    alignItems= "flex-start";
+                    justifyContent= "flex-end";
+                    break;
+                case "prawo-gora":
+                    alignItems= "flex-end";
+                    justifyContent= "center";
+                    break;
+                case "prawo-srodek":
+                    alignItems= "center";
+                    justifyContent= "flex-end";
+                    break;
+                case "prawo-dol":
+                    alignItems= "flex-end";
+                    justifyContent= "flex-end";
+                    break;
+        }
+
+        alignmentTemplate.add("flexDirection", flexDirection);
+        alignmentTemplate.add("justifyContent", justifyContent);
+        alignmentTemplate.add("alignItems", alignItems);
+
+        return alignmentTemplate;
+    }
 
 }

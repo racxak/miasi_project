@@ -148,4 +148,22 @@ public interface TextToWebVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSource(TextToWebParser.SourceContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#margin}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitMargin(TextToWebParser.MarginContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#padding}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitPadding(TextToWebParser.PaddingContext ctx);
+	/**
+	 * Visit a parse tree produced by {@link TextToWebParser#borderRadius}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitBorderRadius(TextToWebParser.BorderRadiusContext ctx);
 }
