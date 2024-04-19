@@ -21,8 +21,8 @@ list: 'Lista' '{' ('Typ' STRING)? listItem* '}'; //typ : numerowana
 listItem: 'Element' STRING;
 
 // Atrybuty
-textAttributes: (borderRadius | margin | padding | width | height | color | textDecoration| fontSize | textAlignment | alignment | backgroundColor)*;
-imageAttributes: (borderRadius | width | height | alignment |source)*;
+textAttributes: (borderRadius  | margin | padding | width | height | color | textDecoration| fontSize | textAlignment | alignment | backgroundColor)*;
+imageAttributes: (borderRadius | margin | width | height | alignment |source)*;
 
 
 // Atrybuty wspólne

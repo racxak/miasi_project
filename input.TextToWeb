@@ -13,6 +13,9 @@ Strona "Moja Strona" {
          Sekcja "Pokazanie Listy i czcionek"{
                 Rozmieszczenie "rzad" "srodek"
                 Sekcja "Pokazanie listy"{
+                    Zaokraglenie "16px"
+                    Wysokosc "15rem"
+                    Padding "2rem"
                     KolorTla "#03DAC6"
                     Naglowek "Dzięki projektowi można w przystępny sposób stowrzyć:"
                     Lista{
@@ -24,6 +27,10 @@ Strona "Moja Strona" {
                         }
                 }
                 Sekcja "Czcionki"{
+                    Wysokosc "15rem"
+                    Padding "2rem"
+                    Margines "1rem"
+                    Zaokraglenie "16px"
                     KolorTla "#3700B3"
                     Tekst "Czcionki mogą być duże"{
                         Rozmiar "40px"
@@ -45,23 +52,75 @@ Strona "Moja Strona" {
             }
             Sekcja "Zdjecia"{
                 Rozmieszczenie "rzad" "srodek"
+                        Sekcja "Kontener"{
+                                    Rozmieszczenie "kolumna" "srodek"
+                                    Obraz "komputer"{
+                                          Margines "2rem"
+
+                                          Szerokosc "200px"
+                                          Wysokosc "200px"
+                                    }
+                                    Tekst "Kiedy nie mamy źródła"
+                                }
                 Sekcja "Kontener"{
                     Rozmieszczenie "kolumna" "srodek"
                     Obraz "komputer"{
+                        Margines "2rem"
                         Zrodlo "https://ninjasites.com/images/blog/webpage-creation.png?v=1684153977260389102"
                         Szerokosc "200px"
+                        Zaokraglenie "50%"
                         Wysokosc "200px"
                     }
                      Tekst "Kiedy mamy źródło"
                 }
-                Sekcja "Kontener"{
-                    Rozmieszczenie "kolumna" "srodek"
-                    Obraz "komputer"{
-                          Szerokosc "200px"
-                          Wysokosc "200px"
-                    }
-                    Tekst "Kiedy nie mamy źródła"
-                }
+
+                 Sekcja "Kontener"{
+                                    Rozmieszczenie "kolumna" "srodek"
+                                    Obraz "komputer"{
+                                          Margines "2rem"
+                                          Zaokraglenie "tak"
+                                          Szerokosc "200px"
+                                          Wysokosc "200px"
+                                    }
+                                    Tekst "Kiedy nie mamy źródła"
+                                }
             }
     }
-}
+    Sekcja "Zagnieżdżenia"{
+        Rozmieszczenie "kolumna" "lewo-gora"
+        Szerokosc "90vw"
+        Wysokosc "90vh"
+        Naglowek "Sekcje zagnieżdzone"{
+            Poziom "1"
+        }
+
+            Sekcja "Sekcje zagnieżdzone"{
+               Padding "2rem"
+               Rozmieszczenie "kolumna" "lewo-gora"
+               Szerokosc "50vw"
+               Wysokosc "60vh"
+               KolorTla "slategrey"
+               Naglowek "Temat przewodni"
+               Tekst "Prostsza implemnentacja stron bez znajomości HTML/CSS"{
+               Wysokosc "10rem"
+               }
+
+               Sekcja "Możliwości rozowju"{
+                    Padding "3rem"
+                    KolorTla "red"
+                    Szerokosc "85%"
+                    Wysokosc "100%"
+                    Naglowek "Możliwości rozwoju" {
+                    KolorCzcionki "white"
+                    }
+                    Lista{
+                    Typ "nienumerowana"
+                    Element "poprawa wystylizowania, więcej opcji CSS"
+                    Element "Rozbudowanie HTML"
+                    }
+                }
+
+               }
+            }
+        }
+    }

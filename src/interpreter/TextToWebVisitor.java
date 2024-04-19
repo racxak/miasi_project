@@ -138,7 +138,6 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         }else {
             headerTemplate.add("fontColor", "");
         }
-
         return headerTemplate;
     }
 
@@ -178,7 +177,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         ST sectionTemplate = new ST(group, "\n<$styles$>\n$content$\n</div>\n");
 
         ST styles = new ST(group, "div$styles$");
-        ST styles2 = new ST(group, "$space$style=\"margin:2rem; padding: 1rem; border-radius: 8px; $styles$\"");
+        ST styles2 = new ST(group, "$space$style=\"$styles$\"");
         styles2.add("space"," ");
         if ( ctx.sectionContent().children != null) {
             for (ParseTree child : ctx.sectionContent().children) {
@@ -220,6 +219,17 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 }  else if (child instanceof TextToWebParser.HeightContext) {
                     ST height = visitHeight((TextToWebParser.HeightContext) child);
                     styles2.add("styles", height);
+                }  else if (child instanceof TextToWebParser.MarginContext) {
+                    ST margin = visitMargin((TextToWebParser.MarginContext) child);
+                    styles2.add("styles", margin);
+                }
+                else if (child instanceof TextToWebParser.PaddingContext) {
+                    ST padding = visitPadding((TextToWebParser.PaddingContext) child);
+                    styles2.add("styles", padding);
+                }
+                else if (child instanceof TextToWebParser.BorderRadiusContext) {
+                    ST borderRadius = visitBorderRadius((TextToWebParser.BorderRadiusContext) child);
+                    styles2.add("styles", borderRadius);
                 }
                 else if (child instanceof TextToWebParser.AlignmentContext) {
                     ST alignment = visitAlignment((TextToWebParser.AlignmentContext) child);
@@ -243,17 +253,17 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
     public ST visitBackgroundColor(TextToWebParser.BackgroundColorContext ctx) {
         ST backgroundColorTemplate = new ST(group, "background-color: $backgroundColor$;");
         String backgroundColor = ctx.STRING().getText().replaceAll("^\"|\"$", "");
-        if(!backgroundColor.isEmpty()){
-            if (!backgroundColor.startsWith("#")) {
-//                TODO: Zemienić API - darmowy okres wykończony
-                Translator translator = new Translator();
-                try {
-                    backgroundColor = translator.translate("pl", "en", backgroundColor);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
+//        if(!backgroundColor.isEmpty()){
+//            if (!backgroundColor.startsWith("#")) {
+////                TODO: Zemienić API - darmowy okres wykończony
+//                Translator translator = new Translator();
+//                try {
+//                    backgroundColor = translator.translate("pl", "en", backgroundColor);
+//                } catch (Exception e) {
+//                    e.printStackTrace();
+//                }
+//            }
+//        }
         backgroundColorTemplate.add("backgroundColor", backgroundColor);
         return backgroundColorTemplate;
     }
@@ -267,7 +277,7 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         String text = ctx.STRING().getText().replaceAll("^\"|\"$", "");
         textTemplate.add("text", text);
         if ( ctx.textAttributes() != null && ctx.textAttributes().children != null) {
-            styles.add("styles", " style=\"margin: 1rem; padding: 0.5rem; border-radius: 8px;");
+            styles.add("styles", " style=\"");
             for (ParseTree child : ctx.textAttributes().children) {
                 if (child instanceof TextToWebParser.BackgroundColorContext) {
                     ST backgroundColor = visitBackgroundColor((TextToWebParser.BackgroundColorContext) child);
@@ -291,13 +301,25 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                 else if (child instanceof TextToWebParser.TextDecorationContext) {
                     ST textDecoration = visitTextDecoration((TextToWebParser.TextDecorationContext) child);
                     styles.add("styles", textDecoration);}
+                else if (child instanceof TextToWebParser.MarginContext) {
+                    ST margin = visitMargin((TextToWebParser.MarginContext) child);
+                    styles.add("styles", margin);
+                }
+                else if (child instanceof TextToWebParser.PaddingContext) {
+                    ST padding = visitPadding((TextToWebParser.PaddingContext) child);
+                    styles.add("styles", padding);
+                }
+                else if (child instanceof TextToWebParser.BorderRadiusContext) {
+                    ST borderRadius = visitBorderRadius((TextToWebParser.BorderRadiusContext) child);
+                    styles.add("styles", borderRadius);
+                }
                 else {
                     styles.add("styles", "");
                 }
             }
             styles.add("styles", "\"");
         }else {
-            styles.add("styles", " style=\"margin: 1rem; padding: 0.5rem; border-radius: 8px; \";");
+            styles.add("styles", " ");
         }
         textTemplate.add("styles", styles);
 
@@ -366,6 +388,14 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
                     ST width = visitWidth((TextToWebParser.WidthContext) child);
                     stylesImage1.add("imgStyle", width);
                 }
+                else if (child instanceof TextToWebParser.MarginContext) {
+                    ST margin = visitMargin((TextToWebParser.MarginContext) child);
+                    stylesImage1.add("imgStyle", margin);}
+
+                    else if (child instanceof TextToWebParser.BorderRadiusContext) {
+                    ST borderRadius = visitBorderRadius((TextToWebParser.BorderRadiusContext) child);
+                    stylesImage1.add("imgStyle", borderRadius);
+            }
                 else {
                     stylesImage1.add("imgStyle", "");
                 }
@@ -477,8 +507,9 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
 
         if (direction.equals("rzad")) {
             flexDirection = "row";
+        }else {
+            flexDirection = "column";
         }
-
 
             switch (alignment) {
                 case "lewo-gora":
@@ -526,4 +557,42 @@ public class TextToWebVisitor extends TextToWebBaseVisitor<ST> {
         return alignmentTemplate;
     }
 
+    @Override
+    public ST visitMargin(TextToWebParser.MarginContext ctx) {
+        ST marginTemplate = new ST(group, "margin: $margin$;");
+        String margin = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if(margin.equals("tak")){
+            margin="2rem";
+        } else if (margin.equals("nie")) {
+            margin="0";
+        }
+        marginTemplate.add("margin", margin);
+        return marginTemplate;
+    }
+
+    @Override
+    public ST visitPadding(TextToWebParser.PaddingContext ctx) {
+        ST paddingTemplate = new ST(group, "padding: $padding$;");
+        String padding = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if(padding.equals("tak")){
+            padding="1rem";
+        } else if (padding.equals("nie")) {
+            padding="0";
+        }
+        paddingTemplate.add("padding", padding);
+        return paddingTemplate;
+    }
+
+    @Override
+    public ST visitBorderRadius(TextToWebParser.BorderRadiusContext ctx) {
+        ST borderRadiusTemplate = new ST(group, "border-radius: $borderRadius$;");
+        String borderRadius = ctx.STRING().getText().replaceAll("^\"|\"$", "");
+        if(borderRadius.equals("tak")){
+            borderRadius="8px";
+        } else if (borderRadius.equals("nie")) {
+            borderRadius="0";
+        }
+        borderRadiusTemplate.add("borderRadius", borderRadius);
+        return borderRadiusTemplate;
+    }
 }
